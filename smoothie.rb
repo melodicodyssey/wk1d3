@@ -48,13 +48,15 @@ class Blender
 	# puts * + next 20 chars of liquid + *
 	# etc
 
+	@@blended = false
+
 	def blend(ingredients_hash)
 		# turn array of strings into big array of 1 char per element
 		# call "shuffle" on this big array
 		ingredients = ingredients_hash.keys
 		liquid = ingredients.join("").split("").delete_if{|char| char == " "}.shuffle.join("")
 		n = 0
-		if @power_switch == true
+		if @power_switch == true && @@blended == false
 			#sides of glass + the "liquid" that was blended
 			puts ""
 			for i in (1..liquid.size/20)
@@ -67,6 +69,12 @@ class Blender
 			print "#{"*"*24}\n#{"*"*24}"
 			sleep 1
 			puts "#{liquid.slice((-1 - liquid.size%20), liquid.size%20)}"
+			if liquid.size%20 > 0
+				puts "\nA few bits of 'juice' spilled over onto the table.  No worries..."
+			end
+			@@blended = true
+		elsif @power_switch == true && @@blended == true
+			puts "\nThe blender is on, but we have already blended the ingredients.\n"
 		else
 			puts "The blender is not on!  Please call the .on method!"
 		end
@@ -100,13 +108,18 @@ class Blender
 					puts "\nThe blender is now turned off!   [OFF [| ON]\n----------\n\n"
 					sleep 1
 				else
-					puts "\nThe blender is already off!   [OFF [\ ON]\n----------\n\n"
+					puts "\nThe blender is already off!   [OFF [| ON]\n----------\n\n"
 					sleep 1
 				end
 
 			when "blend"
-				if @power_switch == true
+				if @power_switch == true && @@blended == false
 					puts "\nBleennnnddddiiiinnnnnggggg!\n----------\n"
+					sleep 1
+					blend(@ingredients_hash)
+					puts "\n----------\n"
+					sleep 1
+				elsif @power_switch == true && @@blended == true
 					sleep 1
 					blend(@ingredients_hash)
 					puts "\n----------\n"
